@@ -264,13 +264,20 @@ class OneDrive with ChangeNotifier {
       var now = DateTime.now();
       var url = Uri.parse(
           "$apiEndpoint/me/drive/${_getRootFolder(isAppFolder)}:$remotePath:/createUploadSession");
-      var resp = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $accessToken",
-          "Content-Type": "application/json"
-        },
-      );
+      var resp = await http.post(url,
+          headers: {
+            "Authorization": "Bearer $accessToken",
+            "Content-Type": "application/json"
+          },
+          body: json.encode(
+            {
+              "@microsoft.graph.conflictBehavior": "rename",
+              "fileSystemInfo": {
+                "@odata.type": "microsoft.graph.fileSystemInfo"
+              },
+              "name": remotePath.split("/").last
+            },
+          ));
       debugPrint(
           "# Create Session: ${DateTime.now().difference(now).inMilliseconds} ms");
 
